@@ -31,7 +31,7 @@
 #define CARD_READ_INTERVAL 50     // ms between RFID polls
 
 // Terminal ID (set per device)
-#define TERMINAL_ID    "TRM-DEFAULT"
+#define TERMINAL_ID    "TRM-001"
 
 // Protocol Constants
 #define MSG_TYPE_CARD_TAP    "CARD_TAP"

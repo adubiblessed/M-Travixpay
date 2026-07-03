@@ -1,0 +1,7 @@
+/.pio
+
+db.sqlite3
+
+__pycache__/
+
+payment.log

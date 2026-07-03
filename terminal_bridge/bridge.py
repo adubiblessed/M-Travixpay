@@ -105,7 +105,7 @@ class TerminalBridge:
         logger.info(f"Card tap: {msg.card_uid} at {msg.terminal_id}")
 
         # Generate deterministic tap reference
-        tap_ref = msg.tap_reference or generate_signature(
+        tap_ref = getattr(msg, 'tap_ref', None) or generate_signature(
             msg.card_uid, msg.terminal_id, msg.timestamp
         )
 
