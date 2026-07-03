@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TravixPay - Event-driven Fare Collection and Transit Wallet System">
+    <title>{% block title %}TravixPay{% endblock %}</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS (Play CDN for rapid compilation) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            blue: '#0A2540',      /* Moniepoint/Stripe trust deep blue */
+                            blueLight: '#635BFF', /* Stripe style secondary blue */
+                            green: '#00D4B2',     /* Emerald successful green accent */
+                            greenDark: '#008F7A',
+                            emerald: '#10B981',   /* Pure emerald for status badges */
+                            grayBg: '#F8F9FA',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Alpine.js (for declarative micro-interactions) -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- HTMX (for fast, reactive AJAX transitions) -->
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <script>
+        // Set CSRF token for all HTMX requests automatically
+        document.addEventListener('htmx:configRequest', (event) => {
+            event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+        });
+    </script>
+
+    <!-- Loading spinner styling -->
+    <style>
+        .htmx-indicator {
+            display: none;
+        }
+        .htmx-request .htmx-indicator {
+            display: inline-block;
+        }
+        .htmx-request.htmx-indicator {
+            display: inline-block;
+        }
+    </style>
+
+    {% block styles %}{% endblock %}
+</head>
+<body class="h-full font-sans text-gray-900 bg-gray-50 flex flex-col">
+    
+    <!-- System Status Banner (degraded mode warning if system status goes down) -->
+    {% if SYSTEM_STATUS == 'DEGRADED' %}
+    <div class="bg-amber-500 text-white text-center py-2 px-4 text-xs font-semibold flex items-center justify-center gap-2">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>TravixPay services are currently running in a degraded state. Wallet funding might be delayed.</span>
+    </div>
+    {% endif %}
+
+    {% block body_content %}{% endblock %}
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

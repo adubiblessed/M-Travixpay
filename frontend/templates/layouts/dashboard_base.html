@@ -1,0 +1,60 @@
+{% extends 'layouts/base.html' %}
+
+{% block body_content %}
+<div class="h-screen flex overflow-hidden bg-brand-grayBg">
+    <!-- Desktop Sidebar -->
+    {% include 'components/sidebar.html' %}
+
+    <!-- Main Content Panel Wrapper -->
+    <div class="flex flex-col w-0 flex-1 overflow-hidden md:pl-64 pb-16 md:pb-0">
+        <!-- Header Toolbar -->
+        {% include 'components/navbar.html' %}
+
+        <!-- Main View Pane -->
+        <main class="flex-1 relative z-0 overflow-y-auto focus:outline-none py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+                <!-- Top page title and actions block -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight text-brand-blue">
+                            {% block page_title %}{% endblock %}
+                        </h1>
+                        <p class="text-sm text-gray-500 mt-1">
+                            {% block page_subtitle %}{% endblock %}
+                        </p>
+                    </div>
+                    <div class="flex gap-3">
+                        {% block page_actions %}{% endblock %}
+                    </div>
+                </div>
+
+                <!-- Django Messages / Alerts Tray -->
+                {% if messages %}
+                <div class="mb-6 space-y-2">
+                    {% for message in messages %}
+                    <div class="rounded-xl p-4 border {% if message.tags == 'success' %}bg-emerald-50 border-emerald-200 text-emerald-800{% elif message.tags == 'error' %}bg-rose-50 border-rose-200 text-rose-800{% else %}bg-blue-50 border-blue-200 text-blue-800{% endif %} flex justify-between items-center shadow-sm">
+                        <div class="flex items-center gap-3">
+                            {% if message.tags == 'success' %}
+                            <i class="fa-solid fa-circle-check text-emerald-500 text-lg"></i>
+                            {% elif message.tags == 'error' %}
+                            <i class="fa-solid fa-circle-exclamation text-rose-500 text-lg"></i>
+                            {% else %}
+                            <i class="fa-solid fa-circle-info text-blue-500 text-lg"></i>
+                            {% endif %}
+                            <span class="text-sm font-medium">{{ message }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Content Area -->
+                {% block dashboard_content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Mobile Bottom Navigation Menu -->
+    {% include 'components/mobile_nav.html' %}
+</div>
+{% endblock %}

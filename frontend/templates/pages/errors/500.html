@@ -1,0 +1,40 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Server Error - TravixPay{% endblock %}
+
+{% block body_content %}
+<div class="min-h-screen flex flex-col items-center justify-center bg-brand-grayBg px-4">
+    <div class="text-center max-w-md">
+        <!-- Error Icon -->
+        <div class="w-20 h-20 bg-rose-50 text-rose-400 rounded-full flex items-center justify-center text-3xl mx-auto mb-6 shadow-inner border border-rose-100">
+            <i class="fa-solid fa-server"></i>
+        </div>
+
+        <h1 class="text-6xl font-black text-brand-blue tracking-tight">500</h1>
+        <h2 class="text-xl font-bold text-brand-blue mt-2">Something Went Wrong</h2>
+        <p class="text-sm text-gray-500 mt-3 font-medium">
+            Our servers encountered an unexpected error. Your funds and data are safe. Please try again in a few moments.
+        </p>
+
+        <div class="mt-6 bg-amber-50/30 rounded-2xl p-4 border border-amber-100/50 text-left">
+            <h4 class="text-xs font-bold text-amber-800 flex items-center gap-2">
+                <i class="fa-solid fa-circle-info"></i>What you can do:
+            </h4>
+            <ul class="list-disc pl-5 mt-2 text-xs text-amber-700 font-medium space-y-1">
+                <li>Wait a few minutes and refresh the page.</li>
+                <li>Check your internet connection.</li>
+                <li>If the problem persists, contact support.</li>
+            </ul>
+        </div>
+
+        <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+            <a href="{% url 'accounts:passenger_dashboard' %}" class="inline-flex items-center justify-center py-3 px-6 border border-transparent rounded-xl shadow-md text-sm font-semibold text-white bg-brand-blue hover:bg-slate-900 transition duration-150">
+                <i class="fa-solid fa-house mr-2"></i>Go to Dashboard
+            </a>
+            <button onclick="location.reload()" class="inline-flex items-center justify-center py-3 px-6 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition duration-150">
+                <i class="fa-solid fa-arrows-rotate mr-2"></i>Retry
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

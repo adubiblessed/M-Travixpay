@@ -1,0 +1,15 @@
+{% if intent.status == 'FAILED' %}
+<div class="mt-6">
+    <div class="bg-rose-50/30 rounded-2xl p-4 border border-rose-100/50">
+        <p class="text-xs font-bold text-rose-800"><i class="fa-solid fa-circle-exclamation mr-1"></i>Payment failed</p>
+        <p class="text-xxs text-rose-700 mt-1">The checkout session could not be created. Please try again.</p>
+    </div>
+</div>
+{% else %}
+<div hx-get="{% url 'payments:fund_poll' intent.uuid %}"
+     hx-trigger="every 1.5s"
+     hx-swap="outerHTML"
+     class="mt-6 text-xxs font-bold text-gray-400 uppercase tracking-widest">
+     Contacting gateway... (Status: {{ intent.status }})
+</div>
+{% endif %}

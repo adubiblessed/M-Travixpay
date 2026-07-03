@@ -1,0 +1,52 @@
+<!-- Reusable Confirmation Modal
+     Usage: {% include 'components/modals/confirm_modal.html' with modal_id='deleteConfirm' title='Delete Item' message='Are you sure?' confirm_text='Delete' confirm_class='bg-rose-600' %}
+-->
+<div id="{{ modal_id|default:'confirmModal' }}"
+     x-data="{ open: false }"
+     @open-{{ modal_id|default:'confirmModal' }}.window="open = true"
+     x-show="open"
+     x-transition:enter="transition ease-out duration-200"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-150"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"
+     class="fixed inset-0 z-50 overflow-y-auto"
+     style="display: none;">
+
+    <!-- Backdrop -->
+    <div class="fixed inset-0 bg-black/40 backdrop-blur-sm" @click="open = false"></div>
+
+    <!-- Modal Panel -->
+    <div class="flex min-h-full items-center justify-center p-4">
+        <div class="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-gray-100"
+             @click.stop
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100">
+
+            <!-- Icon -->
+            <div class="w-14 h-14 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center text-2xl mx-auto mb-4 border border-rose-100">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <!-- Title -->
+            <h3 class="text-lg font-bold text-brand-blue text-center">{{ title|default:"Confirm Action" }}</h3>
+
+            <!-- Message -->
+            <p class="text-sm text-gray-500 mt-2 text-center font-medium">{{ message|default:"Are you sure you want to proceed?" }}</p>
+
+            <!-- Actions -->
+            <div class="mt-6 flex gap-3">
+                <button @click="open = false"
+                        class="flex-1 py-3 px-4 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition duration-150">
+                    Cancel
+                </button>
+                <button @click="$dispatch('confirm-{{ modal_id|default:'confirmModal' }}'); open = false"
+                        class="flex-1 py-3 px-4 border border-transparent rounded-xl text-sm font-semibold text-white {{ confirm_class|default:'bg-rose-600 hover:bg-rose-700' }} transition duration-150 shadow-md">
+                    {{ confirm_text|default:"Confirm" }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

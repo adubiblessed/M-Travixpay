@@ -1,0 +1,105 @@
+{% extends 'layouts/dashboard_base.html' %}
+
+{% block title %}Admin Control Panel - TravixPay{% endblock %}
+{% block page_title %}Operational Console{% endblock %}
+{% block page_subtitle %}Real-time system health and payment transaction diagnostics{% endblock %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+    
+    <!-- System Status Grid (Stripe style diagnostics) -->
+    <div>
+        <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Core System Diagnostics</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <!-- Nomba Gateway Status Widget -->
+            <div class="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm">
+                <div class="flex justify-between items-start">
+                    <span class="text-xxs font-bold text-gray-400 uppercase tracking-wider">Nomba Gateway</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xxs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                        ONLINE
+                    </span>
+                </div>
+                <p class="text-lg font-black text-brand-blue mt-3">Active</p>
+                <span class="text-xxs text-gray-400 font-medium">Base Endpoint Verified</span>
+            </div>
+
+            <!-- Circuit Breaker Status Widget -->
+            <div class="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm">
+                <div class="flex justify-between items-start">
+                    <span class="text-xxs font-bold text-gray-400 uppercase tracking-wider">Circuit Breaker</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xxs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                        CLOSED
+                    </span>
+                </div>
+                <p class="text-lg font-black text-brand-blue mt-3">Healthy</p>
+                <span class="text-xxs text-gray-400 font-medium">0 failure spikes recorded</span>
+            </div>
+
+            <!-- Webhook Event Status Widget -->
+            <div class="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm">
+                <div class="flex justify-between items-start">
+                    <span class="text-xxs font-bold text-gray-400 uppercase tracking-wider">Webhook Secret</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xxs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                        ACTIVE
+                    </span>
+                </div>
+                <p class="text-lg font-black text-brand-blue mt-3">Secure</p>
+                <span class="text-xxs text-gray-400 font-medium">HMAC-SHA256 Engaged</span>
+            </div>
+
+            <!-- Celery/Redis Queue Status Widget -->
+            <div class="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm">
+                <div class="flex justify-between items-start">
+                    <span class="text-xxs font-bold text-gray-400 uppercase tracking-wider">Celery Queue</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xxs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                        HEALTHY
+                    </span>
+                </div>
+                <p class="text-lg font-black text-brand-blue mt-3">Redis Broker</p>
+                <span class="text-xxs text-gray-400 font-medium">DomainEvent Queue operational</span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Payment Stats Monitoring -->
+    <div>
+        <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Payment Volume Monitoring</h3>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Successful Payments panel -->
+            <div class="bg-emerald-50/50 border border-emerald-100 rounded-3xl p-6 shadow-sm">
+                <div class="flex items-center gap-3 text-emerald-600 mb-3">
+                    <i class="fa-solid fa-circle-check text-xl"></i>
+                    <h4 class="text-xs font-bold uppercase tracking-wider">Successful Funding</h4>
+                </div>
+                <p class="text-3xl font-black text-brand-blue">₦{{ success_volume|default:"0.00" }}</p>
+                <span class="text-xxs text-gray-400 font-medium mt-1 block">{{ success_count|default:"0" }} total approved checkouts</span>
+            </div>
+
+            <!-- Pending Payments panel -->
+            <div class="bg-blue-50/50 border border-blue-100 rounded-3xl p-6 shadow-sm">
+                <div class="flex items-center gap-3 text-blue-600 mb-3">
+                    <i class="fa-solid fa-spinner animate-spin text-xl"></i>
+                    <h4 class="text-xs font-bold uppercase tracking-wider">Awaiting Verification</h4>
+                </div>
+                <p class="text-3xl font-black text-brand-blue">₦{{ pending_volume|default:"0.00" }}</p>
+                <span class="text-xxs text-gray-400 font-medium mt-1 block">{{ pending_count|default:"0" }} transactions in processing</span>
+            </div>
+
+            <!-- Failed Payments panel -->
+            <div class="bg-rose-50/50 border border-rose-100 rounded-3xl p-6 shadow-sm">
+                <div class="flex items-center gap-3 text-rose-600 mb-3">
+                    <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                    <h4 class="text-xs font-bold uppercase tracking-wider">Failed Checkout Orders</h4>
+                </div>
+                <p class="text-3xl font-black text-brand-blue">₦{{ failed_volume|default:"0.00" }}</p>
+                <span class="text-xxs text-gray-400 font-medium mt-1 block">{{ failed_count|default:"0" }} terminated attempts</span>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,207 @@
+{% extends 'layouts/dashboard_base.html' %}
+
+{% block title %}Driver Console - TravixPay{% endblock %}
+{% block page_title %}Driver Console{% endblock %}
+{% block page_subtitle %}Manage your bus routes and track passenger payments{% endblock %}
+
+{% block page_actions %}
+<div class="flex items-center gap-2">
+    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-100">
+        <span class="h-2 w-2 rounded-full bg-emerald-500 mr-2 animate-ping"></span>
+        Active
+    </span>
+</div>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="space-y-6" x-data="{ showCreateForm: false }">
+
+    <!-- Top Stats Row -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <!-- Today's Revenue -->
+        <div class="bg-gradient-to-br from-brand-blue to-slate-900 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden border border-slate-800">
+            <div class="absolute -right-10 -top-10 w-28 h-28 rounded-full bg-brand-green/10 blur-xl"></div>
+            <span class="text-xxs font-semibold text-slate-400 uppercase tracking-wider">Today's Revenue</span>
+            <h2 class="text-3xl font-extrabold tracking-tight mt-1">₦{{ total_revenue }}</h2>
+        </div>
+
+        <!-- Today's Taps -->
+        <div class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+            <span class="text-xxs font-bold text-gray-400 uppercase tracking-wider">Today's Passenger Taps</span>
+            <h2 class="text-3xl font-extrabold text-brand-blue mt-1">{{ taps_count }}</h2>
+        </div>
+
+        <!-- Total Destinations -->
+        <div class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+            <span class="text-xxs font-bold text-gray-400 uppercase tracking-wider">My Destinations</span>
+            <h2 class="text-3xl font-extrabold text-brand-blue mt-1">{{ destinations|length }}</h2>
+        </div>
+    </div>
+
+    <!-- Create Destination Toggle -->
+    <div>
+        <button @click="showCreateForm = !showCreateForm"
+                class="w-full flex justify-between items-center py-4 px-5 bg-white border border-gray-100 rounded-2xl shadow-sm text-sm font-bold text-brand-blue hover:bg-gray-50 transition duration-150 group">
+            <span class="flex items-center gap-3">
+                <i class="fa-solid fa-plus-circle text-brand-greenDark text-lg group-hover:scale-105 transition duration-150"></i>
+                Add New Destination
+            </span>
+            <i class="fa-solid" :class="showCreateForm ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+        </button>
+
+        <!-- Create Destination Form -->
+        <div x-show="showCreateForm" x-transition
+             class="mt-3 bg-white border border-gray-100 rounded-2xl p-6 shadow-md border-t-4 border-t-brand-blueLight">
+            <h4 class="text-sm font-bold text-brand-blue mb-4">Create New Route</h4>
+            <form action="{% url 'drivers:create_destination' %}" method="POST" class="space-y-4">
+                {% csrf_token %}
+
+                <div>
+                    <label for="route_name" class="block text-xs font-bold text-gray-500 mb-1">Route / Destination Name</label>
+                    <input type="text" name="route_name" id="route_name" required
+                           class="block w-full px-3 py-3 border border-gray-300 rounded-xl focus:ring-brand-blueLight focus:border-brand-blueLight text-sm placeholder-gray-300 text-brand-blue font-medium"
+                           placeholder="e.g. Lekki → Ajah Express">
+                </div>
+
+                <div>
+                    <label for="fare_amount" class="block text-xs font-bold text-gray-500 mb-1">Fare Amount (₦)</label>
+                    <input type="number" name="fare_amount" id="fare_amount" required min="50" step="50"
+                           class="block w-full px-3 py-3 border border-gray-300 rounded-xl focus:ring-brand-blueLight focus:border-brand-blueLight text-sm placeholder-gray-300 text-brand-blue font-bold"
+                           placeholder="e.g. 500">
+                </div>
+
+                <div>
+                    <label for="vehicle_number" class="block text-xs font-bold text-gray-500 mb-1">Vehicle Plate Number (Optional)</label>
+                    <input type="text" name="vehicle_number" id="vehicle_number"
+                           class="block w-full px-3 py-3 border border-gray-300 rounded-xl focus:ring-brand-blueLight focus:border-brand-blueLight text-sm placeholder-gray-300 text-brand-blue font-medium"
+                           placeholder="e.g. LAG-456-AA">
+                </div>
+
+                <button type="submit"
+                        class="w-full py-3 px-4 rounded-xl text-sm font-bold text-white bg-brand-blue hover:bg-slate-900 transition duration-150 shadow-md">
+                    <i class="fa-solid fa-plus mr-2"></i>Create Destination
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Destinations List -->
+    <div>
+        <h3 class="text-lg font-bold text-brand-blue mb-4">My Destinations</h3>
+
+        {% if destinations %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {% for dest in destinations %}
+            <div class="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition duration-200 border-t-4 border-t-brand-green relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 w-24 h-24 rounded-full bg-brand-blue/5 blur-lg"></div>
+
+                <div class="p-5">
+                    <!-- Route name + status -->
+                    <div class="flex justify-between items-start mb-3">
+                        <h4 class="text-sm font-bold text-brand-blue">{{ dest.terminal.route }}</h4>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xxs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                            {{ dest.terminal.status }}
+                        </span>
+                    </div>
+
+                    <!-- Terminal Code (Tap Code) — prominent display -->
+                    <div class="bg-gray-50 rounded-xl p-3 border border-gray-200 mb-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-xxs font-bold text-gray-400 uppercase tracking-wider">Tap Code (Terminal ID)</span>
+                                <p class="text-lg font-black font-mono text-brand-blue tracking-wider mt-0.5">{{ dest.terminal.terminal_code }}</p>
+                            </div>
+                            <button onclick="event.preventDefault(); event.stopPropagation(); navigator.clipboard.writeText('{{ dest.terminal.terminal_code }}').then(() => { this.innerHTML = '<i class=\'fa-solid fa-check text-emerald-500\'></i>'; setTimeout(() => { this.innerHTML = '<i class=\'fa-regular fa-copy\'></i>'; }, 2000); })"
+                                    class="bg-white hover:bg-gray-100 text-brand-blue p-2.5 rounded-lg border border-gray-200 shadow-sm transition duration-150">
+                                <i class="fa-regular fa-copy text-sm"></i>
+                            </button>
+                        </div>
+                        <p class="text-xxs text-gray-400 mt-1">Program this code into your Arduino terminal</p>
+                    </div>
+
+                    <!-- Fare + Collected -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <span class="text-xxs text-gray-400 font-bold uppercase">Fare</span>
+                            <p class="text-lg font-extrabold text-brand-blue">₦{{ dest.fare }}</p>
+                        </div>
+                        <div>
+                            <span class="text-xxs text-gray-400 font-bold uppercase">Collected</span>
+                            <p class="text-lg font-extrabold text-emerald-600">₦{{ dest.total_collected }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer link -->
+                <a href="{% url 'drivers:destination_detail' dest.terminal.id %}"
+                   class="block px-5 py-3 bg-gray-50 border-t border-gray-100 text-xxs text-gray-400 font-medium flex items-center justify-between hover:bg-gray-100 transition">
+                    <span>{{ dest.tap_count }} total taps</span>
+                    <span class="text-brand-blueLight font-bold">View Payments →</span>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- Empty state -->
+        <div class="bg-white border border-gray-100 rounded-2xl p-12 text-center shadow-sm">
+            <div class="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 text-3xl mx-auto mb-4">
+                <i class="fa-solid fa-route"></i>
+            </div>
+            <h4 class="text-sm font-bold text-brand-blue">No Destinations Yet</h4>
+            <p class="text-xs text-gray-400 mt-1 max-w-sm mx-auto">
+                Click "Add New Destination" above to create your first bus route. Each destination generates a terminal code for your Arduino device.
+            </p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Recent Taps -->
+    {% if recent_taps %}
+    <div>
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-brand-blue">Recent Passenger Taps</h3>
+            <span class="text-xxs font-bold text-gray-400">Last 15</span>
+        </div>
+
+        <div class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-100">
+                    <thead>
+                        <tr class="text-left text-xxs font-bold text-gray-400 uppercase tracking-wider">
+                            <th class="pb-3">Passenger</th>
+                            <th class="pb-3">Destination</th>
+                            <th class="pb-3">Tap Code</th>
+                            <th class="pb-3 text-right">Fare</th>
+                            <th class="pb-3 text-right">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50 text-xs font-medium text-brand-blue">
+                        {% for tap in recent_taps %}
+                        <tr class="hover:bg-gray-50/50 transition">
+                            <td class="py-3">
+                                <p class="font-bold">{{ tap.card.user.full_name|default:"Unknown" }}</p>
+                                <span class="text-xxs text-gray-400 font-mono">{{ tap.card.card_uid|truncatechars:12 }}</span>
+                            </td>
+                            <td class="py-3">
+                                <span class="text-xxs font-medium text-gray-500">{{ tap.terminal.route }}</span>
+                            </td>
+                            <td class="py-3">
+                                <span class="font-mono text-xxs text-gray-400 font-bold">{{ tap.terminal.terminal_code }}</span>
+                            </td>
+                            <td class="py-3 text-right font-extrabold">₦{{ tap.fare_amount }}</td>
+                            <td class="py-3 text-right">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xxs font-bold {% if tap.status == 'APPROVED' %}bg-emerald-50 text-emerald-700 border border-emerald-100{% else %}bg-rose-50 text-rose-700 border border-rose-100{% endif %}">
+                                    {{ tap.status }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

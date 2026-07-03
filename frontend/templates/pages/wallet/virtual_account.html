@@ -1,0 +1,120 @@
+{% extends 'layouts/dashboard_base.html' %}
+
+{% block title %}Virtual Account - TravixPay{% endblock %}
+{% block page_title %}Virtual Funding Account{% endblock %}
+{% block page_subtitle %}Transfer money from any bank app to fund your wallet instantly{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-xl mx-auto bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
+
+    {% if wallet.virtual_account_number %}
+    <!-- Virtual Account Card (already provisioned) -->
+
+    <!-- Info banner -->
+    <div class="mb-6 rounded-2xl bg-blue-50/40 p-4 border border-blue-100 flex gap-3 text-brand-blue">
+        <i class="fa-solid fa-circle-info text-brand-blueLight text-lg mt-0.5"></i>
+        <div class="text-xs font-medium">
+            This bank account number is permanently assigned to your wallet. Any bank transfer sent here will credit your balance instantly.
+        </div>
+    </div>
+
+    <div class="bg-gray-50 rounded-3xl p-6 border border-gray-100 space-y-6">
+
+        <div class="flex justify-between items-center pb-4 border-b border-gray-200/50">
+            <div>
+                <span class="text-xxs font-bold text-gray-400 uppercase tracking-wider">Assigned Bank</span>
+                <p class="text-lg font-black text-brand-blue mt-0.5">{{ wallet.virtual_account_provider|default:"Nomba Provider" }}</p>
+            </div>
+            <div class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-brand-blueLight text-xl">
+                <i class="fa-solid fa-bank"></i>
+            </div>
+        </div>
+
+        <div class="flex justify-between items-center pb-4 border-b border-gray-200/50">
+            <div>
+                <span class="text-xxs font-bold text-gray-400 uppercase tracking-wider">Account Number</span>
+                <p class="text-2xl font-black tracking-tight text-brand-blue mt-0.5">{{ wallet.virtual_account_number }}</p>
+            </div>
+            <button onclick="navigator.clipboard.writeText('{{ wallet.virtual_account_number }}').then(() => { this.innerHTML = '<i class=\'fa-solid fa-check text-emerald-500\'></i><span class=\'text-emerald-600\'>Copied</span>'; setTimeout(() => { this.innerHTML = '<i class=\'fa-regular fa-copy\'></i><span>Copy</span>'; }, 2000); })"
+                    class="bg-white hover:bg-gray-100 text-brand-blue p-3 rounded-xl border border-gray-200 shadow-sm transition duration-150 flex items-center gap-2 text-xs font-bold">
+                <i class="fa-regular fa-copy"></i>
+                <span>Copy</span>
+            </button>
+        </div>
+
+        <div>
+            <span class="text-xxs font-bold text-gray-400 uppercase tracking-wider">Account Name</span>
+            <p class="text-sm font-bold text-brand-blue mt-0.5">{{ wallet.virtual_account_name|default:"Not Provisioned" }}</p>
+        </div>
+
+    </div>
+
+    <!-- QR Code Placeholder -->
+    <div class="mt-8 text-center">
+        <span class="text-xxs font-semibold text-gray-400 uppercase tracking-wider block mb-3">Scan to Pay (Instant QR)</span>
+        <div class="w-40 h-40 bg-gray-50 border border-gray-200 rounded-3xl mx-auto flex flex-col items-center justify-center p-4 shadow-inner relative overflow-hidden group">
+            <i class="fa-solid fa-qrcode text-6xl text-slate-300 group-hover:scale-105 transition duration-200"></i>
+            <span class="text-[9px] font-bold text-gray-400 mt-2">QR Code Auto-Generated</span>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- No virtual account yet — show creation button -->
+
+    <div class="text-center py-8">
+        <!-- Icon -->
+        <div class="w-20 h-20 bg-blue-50 text-brand-blueLight rounded-full flex items-center justify-center text-3xl mx-auto mb-6 shadow-inner border border-blue-100">
+            <i class="fa-solid fa-building-columns"></i>
+        </div>
+
+        <h3 class="text-xl font-bold text-brand-blue">Get Your Funding Account</h3>
+        <p class="text-sm text-gray-500 mt-2 font-medium max-w-sm mx-auto">
+            Generate a dedicated bank account number. Transfer money from any Nigerian bank app to fund your TravixPay wallet instantly.
+        </p>
+
+        <!-- Create button -->
+        <form method="POST" action="{% url 'wallets:create_virtual_account' %}" class="mt-8">
+            {% csrf_token %}
+            <button type="submit"
+                    hx-post="{% url 'wallets:create_virtual_account' %}"
+                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                    hx-indicator="#va-spinner"
+                    class="inline-flex items-center justify-center py-4 px-8 border border-transparent rounded-xl shadow-md text-sm font-semibold text-white bg-brand-blue hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue transition duration-150">
+                <i class="fa-solid fa-plus-circle mr-2"></i>
+                Generate Virtual Account
+                <svg id="va-spinner" class="htmx-indicator ml-2 w-4 h-4 animate-spin" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+            </button>
+        </form>
+
+        <!-- Info -->
+        <div class="mt-8 bg-gray-50 rounded-2xl p-5 border border-gray-100 text-left">
+            <h4 class="text-xs font-bold text-brand-blue flex items-center gap-2 mb-3">
+                <i class="fa-solid fa-circle-question"></i>How it works
+            </h4>
+            <ul class="space-y-2 text-xs text-gray-600 font-medium">
+                <li class="flex items-start gap-2">
+                    <span class="w-5 h-5 rounded-full bg-brand-blue text-white text-xxs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+                    <span>Click "Generate Virtual Account" above</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="w-5 h-5 rounded-full bg-brand-blue text-white text-xxs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
+                    <span>A unique bank account number is created for your wallet</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="w-5 h-5 rounded-full bg-brand-blue text-white text-xxs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
+                    <span>Transfer money from any bank app to that account number</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="w-5 h-5 rounded-full bg-brand-blue text-white text-xxs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">4</span>
+                    <span>Your TravixPay wallet is credited automatically</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends 'layouts/dashboard_base.html' %}
+
+{% block title %}Manage Cards - TravixPay{% endblock %}
+{% block page_title %}Transport Cards{% endblock %}
+{% block page_subtitle %}Link and manage your RFID transit cards{% endblock %}
+
+{% block dashboard_content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6" x-data="{ showRegisterForm: false }">
+    
+    <!-- Left Column: Add Card Form / Quick Actions -->
+    <div class="lg:col-span-1 space-y-6">
+        
+        <!-- Toggle button to open Register Card form -->
+        <button @click="showRegisterForm = !showRegisterForm" 
+                class="w-full flex justify-between items-center py-4 px-5 bg-white border border-gray-100 rounded-2xl shadow-sm text-sm font-bold text-brand-blue hover:bg-gray-50 transition duration-150 group">
+            <span class="flex items-center gap-3">
+                <i class="fa-solid fa-plus-circle text-brand-greenDark text-lg group-hover:scale-105 transition duration-150"></i>
+                Link New RFID Card
+            </span>
+            <i class="fa-solid" :class="showRegisterForm ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+        </button>
+
+        <!-- Register Card Form -->
+        <div x-show="showRegisterForm" x-transition 
+             class="bg-white border border-gray-100 rounded-3xl p-6 shadow-md border-t-4 border-t-brand-blueLight">
+            <h4 class="text-sm font-bold text-brand-blue mb-4">Register New Card</h4>
+            <form action="{% url 'cards:manage' %}" method="POST" class="space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="register">
+                
+                <div>
+                    <label for="card_uid" class="block text-xs font-bold text-gray-500 mb-1">RFID Card UID / Number</label>
+                    <input type="text" name="card_uid" id="card_uid" required 
+                           class="block w-full px-3 py-3 border border-gray-300 rounded-xl focus:ring-brand-blueLight focus:border-brand-blueLight sm:text-xs placeholder-gray-300 text-brand-blue font-bold tracking-widest uppercase"
+                           placeholder="e.g. RFID-82348A">
+                </div>
+
+                <button type="submit" class="w-full py-3 px-4 rounded-xl text-xs font-bold text-white bg-brand-blue hover:bg-slate-900 transition duration-150 shadow-md">
+                    Verify & Link Card
+                </button>
+            </form>
+        </div>
+
+        <!-- Help instructions -->
+        <div class="bg-blue-50/30 border border-blue-100 rounded-2xl p-5 text-brand-blue">
+            <h4 class="text-xs font-bold flex items-center gap-2 mb-2">
+                <i class="fa-solid fa-circle-question"></i>How Card Taps Work
+            </h4>
+            <p class="text-xxs font-medium leading-relaxed text-slate-600">
+                You can link any compatible RFID transport card to your TravixPay profile. Once linked, tapping your card on any registered bus terminal will automatically deduct the route fare from your wallet balance instantly.
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Right 2 Columns: View Linked Cards list -->
+    <div class="lg:col-span-2 space-y-4">
+        
+        <h3 class="text-lg font-bold text-brand-blue mb-2">Linked Cards</h3>
+
+        {% if cards %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {% for card in cards %}
+                <!-- Transit Card Component -->
+                <div class="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm relative overflow-hidden flex flex-col justify-between border-t-4 {% if card.status == 'ACTIVE' %}border-t-brand-green{% else %}border-t-rose-500{% endif %}">
+                    <!-- Card Background Glow -->
+                    <div class="absolute -right-12 -top-12 w-32 h-32 rounded-full bg-brand-blue/5 blur-xl"></div>
+                    
+                    <div>
+                        <!-- Header with Chip / Status -->
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-8 h-6 bg-amber-100 border border-amber-300/40 rounded-md shadow-inner flex items-center justify-center text-amber-600">
+                                <i class="fa-solid fa-microchip"></i>
+                            </div>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xxs font-bold {% if card.status == 'ACTIVE' %}bg-emerald-50 text-emerald-700 border border-emerald-100{% else %}bg-rose-50 text-rose-700 border border-rose-100{% endif %}">
+                                {{ card.status }}
+                            </span>
+                        </div>
+
+                        <!-- Card Number/UID -->
+                        <p class="text-xs font-bold text-gray-400">Card UID</p>
+                        <p class="text-lg font-extrabold text-brand-blue tracking-wider font-mono mt-0.5 uppercase">{{ card.card_uid }}</p>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center text-xxs font-semibold text-gray-400">
+                        <span>Linked {{ card.linked_at|date:"d M Y" }}</span>
+                        
+                        <!-- Actions on Card -->
+                        <div class="flex gap-2">
+                            {% if card.status == 'ACTIVE' %}
+                            <form action="{% url 'cards:manage' %}" method="POST" onsubmit="return confirm('Are you sure you want to block this card? This action will freeze fare collection on this card.');">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="block">
+                                <input type="hidden" name="card_id" value="{{ card.id }}">
+                                <button type="submit" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 px-2 py-1 rounded transition duration-150">
+                                    <i class="fa-solid fa-lock mr-1"></i>Block
+                                </button>
+                            </form>
+                            {% else %}
+                            <form action="{% url 'cards:manage' %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="unblock">
+                                <input type="hidden" name="card_id" value="{{ card.id }}">
+                                <button type="submit" class="text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50 px-2 py-1 rounded transition duration-150">
+                                    <i class="fa-solid fa-unlock mr-1"></i>Activate
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty state -->
+            <div class="bg-white border border-gray-100 rounded-3xl p-12 text-center shadow-sm">
+                <div class="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 text-3xl mx-auto mb-4">
+                    <i class="fa-solid fa-id-card"></i>
+                </div>
+                <h4 class="text-sm font-bold text-brand-blue">No Linked Cards</h4>
+                <p class="text-xs text-gray-400 mt-1 max-w-sm mx-auto">Link your physical RFID card UID to your profile to begin paying bus fares instantly.</p>
+            </div>
+        {% endif %}
+
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+<!-- Desktop Header / Mobile Header Wrapper -->
+<header class="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow-sm border-b border-gray-100 px-4 sm:px-6 lg:px-8">
+    <div class="flex-1 flex justify-between">
+        
+        <!-- Brand Info for Mobile Screens -->
+        <div class="flex items-center md:hidden gap-2">
+            <div class="w-8 h-8 rounded-lg bg-brand-blue flex items-center justify-center text-white text-sm">
+                <i class="fa-solid fa-plane-departure text-brand-green"></i>
+            </div>
+            <span class="text-lg font-extrabold text-brand-blue tracking-tight">Travix<span class="text-brand-blueLight">Pay</span></span>
+        </div>
+
+        <!-- Spacer on desktop -->
+        <div class="hidden md:block"></div>
+
+        <!-- Right Tray (User Profile, Notifications, Quick Actions) -->
+        <div class="ml-4 flex items-center md:ml-6 gap-4">
+            
+            <!-- Quick Notification Alert -->
+            <button type="button" class="bg-gray-50 p-2 rounded-xl text-gray-400 hover:text-gray-500 focus:outline-none hover:bg-gray-100 transition duration-150">
+                <span class="sr-only">View notifications</span>
+                <i class="fa-regular fa-bell text-lg"></i>
+            </button>
+
+            <!-- Dropdown User Menu -->
+            <div class="relative" x-data="{ open: false }">
+                <button @click="open = !open" type="button" class="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none gap-2 hover:opacity-85 transition duration-150" id="user-menu-button">
+                    <span class="sr-only">Open user menu</span>
+                    <div class="w-9 h-9 rounded-xl bg-brand-blue text-white flex items-center justify-center font-bold text-xs">
+                        {{ request.user.full_name|slice:":2"|upper }}
+                    </div>
+                    <span class="hidden md:block text-sm font-medium text-gray-700">{{ request.user.full_name }}</span>
+                    <i class="fa-solid fa-chevron-down text-xxs text-gray-400 hidden md:block"></i>
+                </button>
+
+                <!-- Dropdown items -->
+                <div x-show="open" @click.away="open = false" 
+                     x-transition:enter="transition ease-out duration-100"
+                     x-transition:enter-start="transform opacity-0 scale-95"
+                     x-transition:enter-end="transform opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-75"
+                     x-transition:leave-start="transform opacity-100 scale-100"
+                     x-transition:leave-end="transform opacity-0 scale-95"
+                     class="origin-top-right absolute right-0 mt-2 w-48 rounded-2xl shadow-xl py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none border border-gray-100 divide-y divide-gray-50" role="menu">
+                    
+                    <div class="px-4 py-3 text-xs text-gray-500">
+                        Logged in as <br><strong class="text-gray-700">{{ request.user.email }}</strong>
+                    </div>
+
+                    <div class="py-1">
+                        <a href="/auth/logout/" class="block px-4 py-2 text-sm text-rose-600 hover:bg-rose-50" role="menuitem">
+                            <i class="fa-solid fa-right-from-bracket mr-2"></i>Sign Out
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</header>

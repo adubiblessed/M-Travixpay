@@ -1,0 +1,39 @@
+{% extends 'layouts/dashboard_base.html' %}
+
+{% block title %}Funding Failed - TravixPay{% endblock %}
+{% block page_title %}Funding Failed{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-xl mx-auto bg-white border border-gray-100 rounded-3xl p-6 shadow-sm text-center">
+    
+    <!-- Failure Badge -->
+    <div class="w-20 h-20 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-6 shadow-inner border border-rose-100">
+        <i class="fa-solid fa-circle-exclamation"></i>
+    </div>
+
+    <h2 class="text-2xl font-black text-brand-blue tracking-tight">Payment Unsuccessful</h2>
+    <p class="text-sm text-gray-500 mt-2 font-medium">We could not process your wallet top-up at this time.</p>
+
+    <!-- Error explanation / Diagnostic -->
+    <div class="mt-6 bg-rose-50/30 rounded-2xl p-4 border border-rose-100/50 max-w-sm mx-auto text-left">
+        <h4 class="text-xs font-bold text-rose-800 flex items-center gap-2">
+            <i class="fa-solid fa-circle-info"></i>Possible Causes:
+        </h4>
+        <ul class="list-disc pl-5 mt-2 text-xs text-rose-700 font-medium space-y-1">
+            <li>Insufficient funds in your bank account.</li>
+            <li>Declined payment by card issuer or bank.</li>
+            <li>Session timeout on the Nomba hosted checkout link.</li>
+        </ul>
+    </div>
+
+    <!-- Actions -->
+    <div class="mt-8 flex flex-col sm:flex-row gap-3 max-w-sm mx-auto">
+        <a href="{% url 'payments:fund_start' %}" class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-md text-sm font-semibold text-white bg-brand-blue hover:bg-slate-900 focus:outline-none transition duration-150">
+            Try Again
+        </a>
+        <a href="{% url 'accounts:passenger_dashboard' %}" class="w-full flex justify-center py-3.5 px-4 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition duration-150">
+            Go to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+<div class="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm min-h-[300px]" id="driver-taps-pane">
+    {% if recent_taps %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-100">
+                <thead>
+                    <tr class="text-left text-xxs font-bold text-gray-400 uppercase tracking-wider">
+                        <th class="pb-3">Passenger / Card</th>
+                        <th class="pb-3">Tap Reference</th>
+                        <th class="pb-3 text-right">Fare</th>
+                        <th class="pb-3 text-right">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50 text-xs font-medium text-brand-blue">
+                    {% for tap in recent_taps %}
+                    <tr class="hover:bg-gray-50/50 transition">
+                        <td class="py-3.5">
+                            <p class="font-bold">{% if tap.card %}{{ tap.card.user.full_name }}{% else %}Unregistered{% endif %}</p>
+                            <span class="text-xxs text-gray-400 font-mono font-medium">{{ tap.card_uid }}</span>
+                        </td>
+                        <td class="py-3.5 font-mono text-xxs text-gray-400">{{ tap.tap_reference|slice:":8" }}...</td>
+                        <td class="py-3.5 text-right font-extrabold">₦{{ tap.fare_amount }}</td>
+                        <td class="py-3.5 text-right">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xxs font-bold {% if tap.status == 'APPROVED' %}bg-emerald-50 text-emerald-700 border border-emerald-100{% else %}bg-rose-50 text-rose-700 border border-rose-100{% endif %}">
+                                {{ tap.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="flex flex-col items-center justify-center py-12 text-center">
+            <div class="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 text-3xl mb-3">
+                <i class="fa-solid fa-signal"></i>
+            </div>
+            <p class="text-sm font-semibold text-brand-blue">Awaiting Passenger Taps</p>
+            <p class="text-xs text-gray-400 mt-1">Bus readers are active. Taps will display here automatically.</p>
+        </div>
+    {% endif %}
+</div>

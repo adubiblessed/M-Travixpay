@@ -1,0 +1,93 @@
+{% extends 'layouts/dashboard_base.html' %}
+
+{% block title %}Audit Ledger - TravixPay{% endblock %}
+{% block page_title %}Audit Ledger{% endblock %}
+{% block page_subtitle %}Full cryptographic and financial operations trail{% endblock %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+    
+    <!-- Filter Toolbar -->
+    <div class="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm">
+        <form method="GET" class="grid grid-cols-1 sm:grid-cols-3 gap-4" hx-get="{% url 'admin_panel:audit_logs' %}" hx-target="#audit-logs-table" hx-select="#audit-logs-table" hx-swap="outerHTML">
+            
+            <!-- Search field -->
+            <div>
+                <label for="search" class="block text-xxs font-bold text-gray-400 uppercase mb-1">Search User / Action</label>
+                <div class="relative rounded-md shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-magnifying-glass text-gray-400 text-xs"></i>
+                    </div>
+                    <input type="text" name="search" id="search" value="{{ search_query }}"
+                           class="block w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-xl focus:ring-brand-blueLight focus:border-brand-blueLight text-xs font-semibold text-brand-blue"
+                           placeholder="Filter records...">
+                </div>
+            </div>
+
+            <!-- Action type selector -->
+            <div>
+                <label for="action_filter" class="block text-xxs font-bold text-gray-400 uppercase mb-1">Action Type</label>
+                <select name="action_filter" id="action_filter" 
+                        class="block w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-brand-blueLight focus:border-brand-blueLight text-xs font-semibold text-brand-blue">
+                    <option value="">All Actions</option>
+                    <option value="USER_REGISTERED" {% if action_filter == 'USER_REGISTERED' %}selected{% endif %}>User Registered</option>
+                    <option value="WALLET_FUNDED" {% if action_filter == 'WALLET_FUNDED' %}selected{% endif %}>Wallet Funded</option>
+                    <option value="FARE_DEDUCTED" {% if action_filter == 'FARE_DEDUCTED' %}selected{% endif %}>Fare Deducted</option>
+                    <option value="CARD_LINKED" {% if action_filter == 'CARD_LINKED' %}selected{% endif %}>Card Linked</option>
+                </select>
+            </div>
+
+            <!-- Submit trigger -->
+            <div class="flex items-end">
+                <button type="submit" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-brand-blue hover:bg-slate-900 transition duration-150 shadow-md">
+                    Apply Filters
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Table ledger widget -->
+    <div class="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm overflow-hidden" id="audit-logs-table">
+        {% if logs %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-100">
+                    <thead>
+                        <tr class="text-left text-xxs font-bold text-gray-400 uppercase tracking-wider">
+                            <th class="pb-3">Timestamp</th>
+                            <th class="pb-3">User</th>
+                            <th class="pb-3">Action</th>
+                            <th class="pb-3">IP Address</th>
+                            <th class="pb-3">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50 text-xs font-medium text-brand-blue">
+                        {% for log in logs %}
+                        <tr class="hover:bg-gray-50/40 transition">
+                            <td class="py-3.5 text-gray-400 font-medium">{{ log.created_at|date:"d M Y, H:i:s" }}</td>
+                            <td class="py-3.5 font-bold">{% if log.user %}{{ log.user.email }}{% else %}Anonymous{% endif %}</td>
+                            <td class="py-3.5">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xxs font-bold bg-blue-50 text-brand-blue border border-blue-100 uppercase">
+                                    {{ log.action }}
+                                </span>
+                            </td>
+                            <td class="py-3.5 text-gray-500 font-mono">{{ log.ip_address|default:"127.0.0.1" }}</td>
+                            <td class="py-3.5 text-slate-500 font-medium max-w-xs truncate">{{ log.details }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="flex flex-col items-center justify-center py-12 text-center">
+                <div class="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 text-3xl mb-3">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+                <p class="text-sm font-semibold text-brand-blue">No matching logs found</p>
+                <p class="text-xs text-gray-400 mt-1">Adjust search parameters or try another action filter.</p>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'layouts/dashboard_base.html' %}
+
+{% block title %}Securing Checkout Link - TravixPay{% endblock %}
+{% block page_title %}Preparing Checkout{% endblock %}
+{% block page_subtitle %}Setting up your secure hosted transaction tunnel{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-xl mx-auto bg-white border border-gray-100 rounded-3xl p-8 shadow-sm text-center" x-data="{ attempts: 0, maxAttempts: 60 }">
+
+    <!-- Spinner loader -->
+    <div class="w-16 h-16 rounded-full border-4 border-slate-100 border-t-brand-blueLight animate-spin mx-auto mb-6"></div>
+
+    <h3 class="text-lg font-bold text-brand-blue">Securing your payment session</h3>
+    <p class="text-xs text-gray-500 mt-2 font-medium">Please wait while we request a secure link from Nomba payment gateway...</p>
+
+    <!-- HTMX polling block with attempt tracking -->
+    <div hx-get="{% url 'payments:fund_poll' intent.uuid %}"
+         hx-trigger="every 1.5s"
+         hx-swap="outerHTML"
+         hx-on::after-request="attempts++; if(attempts >= maxAttempts) { htmx.trigger(this, 'stop') }"
+         class="mt-6 text-xxs font-bold text-gray-400 uppercase tracking-widest">
+         Connecting to Nomba...
+    </div>
+
+    <!-- Timeout fallback (shown after max attempts via Alpine) -->
+    <div x-show="attempts >= maxAttempts" x-cloak class="mt-6">
+        <div class="bg-amber-50/30 rounded-2xl p-4 border border-amber-100/50">
+            <p class="text-xs font-bold text-amber-800"><i class="fa-solid fa-clock mr-1"></i>Connection timeout</p>
+            <p class="text-xxs text-amber-700 mt-1">The payment gateway is taking longer than expected.</p>
+        </div>
+        <a href="{% url 'payments:fund_failure' %}" class="mt-4 inline-flex items-center py-3 px-6 rounded-xl text-sm font-semibold text-white bg-brand-blue hover:bg-slate-900 transition duration-150 shadow-md">
+            Try Again
+        </a>
+    </div>
+
+</div>
+{% endblock %}

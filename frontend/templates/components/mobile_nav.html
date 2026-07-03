@@ -1,0 +1,48 @@
+<!-- Mobile Bottom Navigation (Moniepoint/OPay style) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-30 pb-safe shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+    <div class="flex justify-around items-center h-16">
+        
+        <!-- Passenger Links -->
+        {% if request.user.role == 'PASSENGER' %}
+        <a href="{% url 'accounts:passenger_dashboard' %}" class="flex flex-col items-center justify-center w-full h-full text-xs font-medium transition duration-150 {% if request.resolver_match.url_name == 'passenger_dashboard' %}text-brand-blueLight{% else %}text-gray-400 hover:text-gray-600{% endif %}">
+            <i class="fa-solid fa-wallet text-xl mb-1"></i>
+            <span>Home</span>
+        </a>
+        <a href="{% url 'cards:manage' %}" class="flex flex-col items-center justify-center w-full h-full text-xs font-medium transition duration-150 {% if request.resolver_match.url_name == 'manage' %}text-brand-blueLight{% else %}text-gray-400 hover:text-gray-600{% endif %}">
+            <i class="fa-solid fa-address-card text-xl mb-1"></i>
+            <span>Cards</span>
+        </a>
+        <a href="{% url 'wallets:virtual_account_detail' %}" class="flex flex-col items-center justify-center w-full h-full text-xs font-medium transition duration-150 {% if request.resolver_match.url_name == 'virtual_account_detail' %}text-brand-blueLight{% else %}text-gray-400 hover:text-gray-600{% endif %}">
+            <i class="fa-solid fa-bank text-xl mb-1"></i>
+            <span>Transfer</span>
+        </a>
+        {% endif %}
+
+        <!-- Driver Links -->
+        {% if request.user.role == 'DRIVER' %}
+        <a href="{% url 'drivers:dashboard' %}" class="flex flex-col items-center justify-center w-full h-full text-xs font-medium transition duration-150 {% if request.resolver_match.url_name == 'dashboard' %}text-brand-blueLight{% else %}text-gray-400 hover:text-gray-600{% endif %}">
+            <i class="fa-solid fa-bus text-xl mb-1"></i>
+            <span>Driver Home</span>
+        </a>
+        {% endif %}
+
+        <!-- Admin Links -->
+        {% if request.user.role == 'ADMIN' %}
+        <a href="{% url 'admin_panel:dashboard' %}" class="flex flex-col items-center justify-center w-full h-full text-xs font-medium transition duration-150 {% if request.resolver_match.url_name == 'dashboard' %}text-brand-blueLight{% else %}text-gray-400 hover:text-gray-600{% endif %}">
+            <i class="fa-solid fa-chart-line text-xl mb-1"></i>
+            <span>Console</span>
+        </a>
+        <a href="{% url 'admin_panel:audit_logs' %}" class="flex flex-col items-center justify-center w-full h-full text-xs font-medium transition duration-150 {% if request.resolver_match.url_name == 'audit_logs' %}text-brand-blueLight{% else %}text-gray-400 hover:text-gray-600{% endif %}">
+            <i class="fa-solid fa-file-invoice text-xl mb-1"></i>
+            <span>Logs</span>
+        </a>
+        {% endif %}
+
+        <!-- Common Logout -->
+        <a href="/auth/logout/" class="flex flex-col items-center justify-center w-full h-full text-xs font-medium text-gray-400 hover:text-rose-600 transition duration-150">
+            <i class="fa-solid fa-right-from-bracket text-xl mb-1"></i>
+            <span>Logout</span>
+        </a>
+
+    </div>
+</nav>

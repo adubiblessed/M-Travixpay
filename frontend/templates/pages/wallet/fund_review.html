@@ -1,0 +1,60 @@
+{% extends 'layouts/dashboard_base.html' %}
+
+{% block title %}Confirm Funding - TravixPay{% endblock %}
+{% block page_title %}Confirm Funding{% endblock %}
+{% block page_subtitle %}Review your transaction details before payment{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-xl mx-auto bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
+    
+    <!-- Progress Indicator Step 2 -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between text-xs font-semibold text-gray-400 mb-2">
+            <span class="text-brand-blue font-bold">1. Enter Amount</span>
+            <span class="text-brand-blueLight">2. Confirm Info</span>
+            <span>3. Pay Hosted Checkout</span>
+        </div>
+        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+            <div class="bg-brand-blueLight h-full w-2/3 rounded-full"></div>
+        </div>
+    </div>
+
+    <!-- Review Details -->
+    <div class="space-y-6">
+        
+        <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100 text-center">
+            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Top-up Value</span>
+            <h2 class="text-3xl font-extrabold text-brand-blue mt-1">₦{{ amount }}</h2>
+        </div>
+
+        <div class="divide-y divide-gray-100">
+            <div class="py-3 flex justify-between items-center text-sm font-medium">
+                <span class="text-gray-400">Payment Gateway</span>
+                <span class="text-brand-blue">Nomba Checkout</span>
+            </div>
+            <div class="py-3 flex justify-between items-center text-sm font-medium">
+                <span class="text-gray-400">Transit Wallet</span>
+                <span class="text-brand-blue">{{ request.user.full_name }}</span>
+            </div>
+            <div class="py-3 flex justify-between items-center text-sm font-medium">
+                <span class="text-gray-400">Transaction Fee</span>
+                <span class="text-emerald-600 font-bold">₦0.00 (Free)</span>
+            </div>
+        </div>
+
+        <!-- Form Submission -->
+        <form action="{% url 'payments:fund_review' %}" method="POST" class="flex flex-col gap-3">
+            {% csrf_token %}
+            <input type="hidden" name="amount" value="{{ amount }}">
+            
+            <button type="submit" class="w-full flex justify-center py-4 px-4 border border-transparent rounded-xl shadow-md text-sm font-semibold text-white bg-brand-blue hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue transition duration-150">
+                <i class="fa-solid fa-lock mr-2 mt-0.5"></i>Confirm & Initialize Payment
+            </button>
+            
+            <a href="{% url 'payments:fund_start' %}" class="w-full text-center py-3 text-sm font-semibold text-gray-500 hover:text-brand-blue transition duration-150">
+                Cancel
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}
