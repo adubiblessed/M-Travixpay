@@ -5,3 +5,12 @@ db.sqlite3
 __pycache__/
 
 payment.log
+
+/docs
+docs
+TASK_LOG.md
+simulator_offline.db
+
+design-system
+.claude
+.env
